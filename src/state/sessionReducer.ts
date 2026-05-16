@@ -13,6 +13,9 @@ import { evaluateChoices } from '../domain/findCorrectChoices';
 import { generateExplanation } from '../domain/explanation';
 import { generateQuestion } from '../domain/generateQuestion';
 
+// 1ラウンドの問題数。10問解いたら成績画面へ
+export const ROUND_LENGTH = 10;
+
 export const initialSessionState: SessionState = {
   screen: 'top',
   mode: 'attack-coverage',
@@ -22,6 +25,7 @@ export const initialSessionState: SessionState = {
   history: [],
   streak: 0,
   bestStreak: 0,
+  roundAnswered: 0,
 };
 
 export type SessionAction =
@@ -108,6 +112,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         screen: 'quiz',
         currentQuestion: question,
         lastAnswer: null,
+        roundAnswered: 0,
       };
     }
     case 'SUBMIT_ANSWER': {
@@ -130,6 +135,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         history: [...state.history, result],
         streak: nextStreak,
         bestStreak: Math.max(state.bestStreak, nextStreak),
+        roundAnswered: state.roundAnswered + 1,
       };
     }
     case 'NEXT_QUESTION': {

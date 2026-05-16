@@ -2,6 +2,7 @@ import { AppHeader } from '../components/AppHeader';
 import { GhostButton } from '../components/GhostButton';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { TypeChip } from '../components/TypeChip';
+import { TYPE_LABEL_JA } from '../constants/types';
 import {
   selectRecentAccuracy,
   selectTotalAnswered,
@@ -10,12 +11,46 @@ import {
 } from '../state/selectors';
 import { useQuizFlow } from '../hooks/useQuizFlow';
 
+function buildShareUrl(args: {
+  accuracy: number;
+  total: number;
+  correct: number;
+  bestStreak: number;
+  weaknesses: { type: keyof typeof TYPE_LABEL_JA }[];
+}): string {
+  const lines: string[] = [
+    'タイプ相性トレーナーで練習しました！',
+    `直近10問の正答率: ${args.accuracy}%（${args.correct}/${args.total}問）`,
+    `連続正解ベスト: ${args.bestStreak}`,
+  ];
+  if (args.weaknesses.length > 0) {
+    const labels = args.weaknesses.map((w) => TYPE_LABEL_JA[w.type]).join(' / ');
+    lines.push(`苦手タイプ: ${labels}`);
+  }
+  const text = `${lines.join('\n')}\n`;
+  const url = typeof window !== 'undefined' ? window.location.origin : '';
+  const params = new URLSearchParams({
+    text,
+    hashtags: 'タイプ相性トレーナー',
+  });
+  if (url) params.set('url', url);
+  return `https://x.com/intent/post?${params.toString()}`;
+}
+
 export function ResultScreen() {
-  const { state, next, goToTop, resetStats } = useQuizFlow();
+  const { state, start, goToTop, resetStats } = useQuizFlow();
   const accuracy = selectRecentAccuracy(state, 10);
   const total = selectTotalAnswered(state);
   const correct = selectTotalCorrect(state);
   const weaknesses = selectWeakTypes(state, 3);
+  const shareUrl = buildShareUrl({
+    accuracy,
+    total,
+    correct,
+    bestStreak: state.bestStreak,
+    weaknesses,
+  });
+  const canShare = total > 0;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -79,12 +114,26 @@ export function ResultScreen() {
         </div>
 
         <div className="flex flex-col gap-2.5 mt-auto">
-          <PrimaryButton onClick={next}>
+          <PrimaryButton onClick={start}>
             もう一度プレイ
             <span aria-hidden="true" className="font-mono font-bold">
               →
             </span>
           </PrimaryButton>
+          {canShare && (
+            <a
+              href={shareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Xに成績をシェア"
+              className="py-3.5 px-4 bg-text-base text-bg border border-text-base font-body font-bold text-xs cursor-pointer hover:opacity-90 active:opacity-90 transition-opacity min-h-[44px] flex items-center justify-center gap-2 no-underline"
+            >
+              <span aria-hidden="true" className="font-display text-base leading-none">
+                𝕏
+              </span>
+              <span>成績をシェア</span>
+            </a>
+          )}
           <GhostButton onClick={goToTop}>トップへ戻る</GhostButton>
           <GhostButton onClick={resetStats}>成績をリセット</GhostButton>
         </div>

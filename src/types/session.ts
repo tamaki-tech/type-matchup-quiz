@@ -11,4 +11,6 @@ export type SessionState = {
   history: QuizResult[];
   streak: number;
   bestStreak: number;
+  // 現ラウンド(1回のプレイ=10問)での回答済み数。START_QUIZでリセット
+  roundAnswered: number;
 };

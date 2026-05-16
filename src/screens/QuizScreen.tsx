@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { CandidateCard } from '../components/CandidateCard';
 import { ChoiceButton } from '../components/ChoiceButton';
@@ -7,6 +6,7 @@ import { OpponentCell } from '../components/OpponentCell';
 import { SectionLabel } from '../components/SectionLabel';
 import { StreakBadge } from '../components/StreakBadge';
 import { useQuizFlow } from '../hooks/useQuizFlow';
+import { ROUND_LENGTH } from '../state/sessionReducer';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -14,7 +14,8 @@ export function QuizScreen() {
   const { state, submit, skip } = useQuizFlow();
   const question = state.currentQuestion;
 
-  const questionNumber = useMemo(() => state.history.length + 1, [state.history.length]);
+  const questionNumber = state.roundAnswered + 1;
+  const progressPct = Math.min(100, (state.roundAnswered / ROUND_LENGTH) * 100);
 
   if (!question) {
     return null;
@@ -30,11 +31,21 @@ export function QuizScreen() {
     <div className="flex flex-col min-h-screen">
       <AppHeader title={modeLabel} logoMark={modeIcon} meta={difficultyLabel} />
       <div className="flex-1 px-5 py-5 pb-8 max-w-md mx-auto w-full flex flex-col">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-2">
           <StreakBadge value={state.streak} />
           <div className="font-mono text-[11px] text-text-dim px-2.5 py-1.5 bg-surface-2 border border-border-base">
-            第<span className="text-text-base font-bold">{questionNumber}</span>問
+            <span className="text-text-base font-bold">{questionNumber}</span>
+            <span className="text-text-mute"> / {ROUND_LENGTH}</span>
           </div>
+        </div>
+        <div
+          aria-hidden="true"
+          className="h-1 bg-surface-2 border-l border-r border-b border-border-base mb-4 overflow-hidden"
+        >
+          <div
+            className="h-full bg-accent transition-[width] duration-300"
+            style={{ width: `${progressPct}%` }}
+          />
         </div>
 
         <div className="mb-4">

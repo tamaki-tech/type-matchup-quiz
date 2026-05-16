@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ROUND_LENGTH,
   initialSessionState,
   sessionReducer,
 } from '../state/sessionReducer';
@@ -70,6 +71,24 @@ describe('sessionReducer', () => {
     expect(s.history).toHaveLength(0);
     expect(s.streak).toBe(0);
     expect(s.bestStreak).toBe(0);
+  });
+
+  it('START_QUIZ は roundAnswered を0にリセット', () => {
+    let s = sessionReducer(initialSessionState, { type: 'START_QUIZ' });
+    s = sessionReducer(s, { type: 'SUBMIT_ANSWER', selectedChoiceIndex: 0 });
+    expect(s.roundAnswered).toBe(1);
+    s = sessionReducer(s, { type: 'START_QUIZ' });
+    expect(s.roundAnswered).toBe(0);
+  });
+
+  it(`${ROUND_LENGTH}問解くと roundAnswered=${ROUND_LENGTH}、history は累積`, () => {
+    let s = sessionReducer(initialSessionState, { type: 'START_QUIZ' });
+    for (let i = 0; i < ROUND_LENGTH; i += 1) {
+      s = sessionReducer(s, { type: 'SUBMIT_ANSWER', selectedChoiceIndex: 0 });
+      if (i < ROUND_LENGTH - 1) s = sessionReducer(s, { type: 'NEXT_QUESTION' });
+    }
+    expect(s.roundAnswered).toBe(ROUND_LENGTH);
+    expect(s.history.length).toBe(ROUND_LENGTH);
   });
 
   it('連続正解→不正解で streak リセット / bestStreak は保持', () => {

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { Multiplier } from '../types/quiz';
 import { TYPE_LABEL_JA } from '../constants/types';
 import { AppHeader } from '../components/AppHeader';
@@ -9,11 +8,13 @@ import { ScoreCard } from '../components/ScoreCard';
 import { TypeChip } from '../components/TypeChip';
 import { VerdictBanner } from '../components/VerdictBanner';
 import { useQuizFlow } from '../hooks/useQuizFlow';
+import { ROUND_LENGTH } from '../state/sessionReducer';
 
 export function ExplanationScreen() {
   const { state, next, goToResult } = useQuizFlow();
   const answer = state.lastAnswer;
-  const questionNumber = useMemo(() => state.history.length, [state.history.length]);
+  const questionNumber = state.roundAnswered;
+  const roundFinished = state.roundAnswered >= ROUND_LENGTH;
 
   if (!answer) return null;
   const { question, correct, selectedChoiceIndex, correctChoiceIndexes, explanation } = answer;
@@ -71,7 +72,11 @@ export function ExplanationScreen() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <AppHeader logoMark="?" title="解説" meta={`第${questionNumber}問`} />
+      <AppHeader
+        logoMark="?"
+        title="解説"
+        meta={`${questionNumber} / ${ROUND_LENGTH}`}
+      />
       <div className="flex-1 px-5 py-5 pb-8 max-w-md mx-auto w-full flex flex-col">
         <VerdictBanner
           correct={correct}
@@ -113,13 +118,24 @@ export function ExplanationScreen() {
         </div>
 
         <div className="mt-auto flex flex-col gap-2">
-          <PrimaryButton onClick={next}>
-            次の問題
-            <span aria-hidden="true" className="font-mono font-bold">
-              →
-            </span>
-          </PrimaryButton>
-          <GhostButton onClick={goToResult}>成績を見る</GhostButton>
+          {roundFinished ? (
+            <PrimaryButton onClick={goToResult}>
+              成績を見る
+              <span aria-hidden="true" className="font-mono font-bold">
+                →
+              </span>
+            </PrimaryButton>
+          ) : (
+            <>
+              <PrimaryButton onClick={next}>
+                次の問題（残り{ROUND_LENGTH - state.roundAnswered}問）
+                <span aria-hidden="true" className="font-mono font-bold">
+                  →
+                </span>
+              </PrimaryButton>
+              <GhostButton onClick={goToResult}>途中で成績を見る</GhostButton>
+            </>
+          )}
         </div>
       </div>
     </div>

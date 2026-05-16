@@ -4,6 +4,7 @@ import { AppHeader } from '../components/AppHeader';
 import { Disclaimer } from '../components/Disclaimer';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { SectionLabel } from '../components/SectionLabel';
+import { SupportFooter } from '../components/SupportFooter';
 import { useQuizFlow } from '../hooks/useQuizFlow';
 
 const MODES: { mode: Mode; icon: string; title: string; sub: string }[] = [
@@ -127,6 +128,7 @@ export function TopScreen() {
         </PrimaryButton>
 
         <Disclaimer className="mt-5" />
+        <SupportFooter className="mt-3" />
       </div>
     </div>
   );

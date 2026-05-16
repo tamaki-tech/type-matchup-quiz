@@ -13,8 +13,8 @@ import { evaluateChoices } from '../domain/findCorrectChoices';
 import { generateExplanation } from '../domain/explanation';
 import { generateQuestion } from '../domain/generateQuestion';
 
-// 1ラウンドの問題数。10問解いたら成績画面へ
-export const ROUND_LENGTH = 10;
+// 1ラウンドの問題数。5問解いたら成績画面へ
+export const ROUND_LENGTH = 5;
 
 export const initialSessionState: SessionState = {
   screen: 'top',

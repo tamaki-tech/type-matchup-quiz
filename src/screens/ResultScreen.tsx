@@ -9,6 +9,7 @@ import {
   selectTotalCorrect,
   selectWeakTypes,
 } from '../state/selectors';
+import { ROUND_LENGTH } from '../state/sessionReducer';
 import { useQuizFlow } from '../hooks/useQuizFlow';
 
 function buildShareUrl(args: {
@@ -20,7 +21,7 @@ function buildShareUrl(args: {
 }): string {
   const lines: string[] = [
     'タイプ相性トレーナーで練習しました！',
-    `直近10問の正答率: ${args.accuracy}%（${args.correct}/${args.total}問）`,
+    `直近${ROUND_LENGTH}問の正答率: ${args.accuracy}%（${args.correct}/${args.total}問）`,
     `連続正解ベスト: ${args.bestStreak}`,
   ];
   if (args.weaknesses.length > 0) {
@@ -58,7 +59,7 @@ export function ResultScreen() {
       <div className="flex-1 px-5 py-5 pb-8 max-w-md mx-auto w-full flex flex-col">
         <div className="text-center pt-5 pb-6 border-b border-border-base mb-6">
           <div className="font-mono text-[10px] tracking-widest3 text-accent mb-2.5">
-            直近10問の正答率
+            直近{ROUND_LENGTH}問の正答率
           </div>
           <div className="font-display text-[64px] leading-none tracking-tight mb-1.5">
             {accuracy}

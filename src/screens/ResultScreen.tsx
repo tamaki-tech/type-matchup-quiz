@@ -134,6 +134,18 @@ export function ResultScreen() {
               <span>成績をシェア</span>
             </a>
           )}
+          <a
+            href="https://buymeacoffee.com/tkmkn2021"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Buy Me a Coffee で開発者を応援"
+            className="py-3.5 px-4 bg-[#ffdd00] text-black border border-[#ffdd00] font-body font-bold text-xs cursor-pointer hover:opacity-90 active:opacity-90 transition-opacity min-h-[44px] flex items-center justify-center gap-2 no-underline"
+          >
+            <span aria-hidden="true" className="font-display text-sm leading-none">
+              BMC
+            </span>
+            <span>開発者にコーヒーをおごる</span>
+          </a>
           <GhostButton onClick={goToTop}>トップへ戻る</GhostButton>
           <GhostButton onClick={resetStats}>成績をリセット</GhostButton>
         </div>
